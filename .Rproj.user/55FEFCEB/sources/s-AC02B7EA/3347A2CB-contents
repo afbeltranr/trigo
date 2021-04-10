@@ -1,0 +1,166 @@
+---
+title: "Tratamiento espectros Silica - Lignina"
+author: "Andres Felipe Beltran"
+date: "4/9/2021"
+output:   
+
+  prettydoc::html_pretty:
+    theme: cayman
+---
+As a first step we import the mean spectra from file `matrizbien.txt`:
+
+```{r}
+spectra <- read.table('matrizbien.txt', sep = ' ', header = TRUE)
+```
+
+In this matrix, the first three columns are not subjects or variables, so we can remove them:
+
+Firstly we remove columns 1 and 3, that have information about row index number:
+
+```{r}
+str(spectra[,c(1,3)])
+```
+In the last command we asked `R` about the nature of columns 1 and 3, in order to confirm why are we removing them. column 1 is a vector of class `integer`, and column 3 is a vector of class `character`.
+
+
+Then we can proceed to remove them:
+
+```{r}
+spectra <- spectra[,-c(1,3)]
+
+```
+
+In this new `data.frame` the first column `lambda` has information about the variables, the frequency of light at which samples were exposed.
+
+In order to remove this column without losing any information we can use the function `column_to_rownames()` from `tibble` package:
+
+Firstly, we confirm that the object `spectra` has a 
+class of `data.frame`
+
+```{r}
+class(spectra)
+```
+Then we make the replacement:
+
+```{r}
+library(tibble)
+spectra <- column_to_rownames(spectra , var = 'lambda')
+```
+
+
+In this moment we have a matrix that has only  the attributes we need: properly named row names and column names, and the absorbances of the samples at each frequency of infrared light.
+
+In order to process the information within this matrix, using `R` functions written for chemometric analyses, it is important to place the subjects (samples) in rows and the variables (wave numbers) in columns. In order to achieve this configuration we proceed to calculate the transpose of the original matrix `spectra` by means of the `t()` function.
+
+```{r}
+spectra.t <- t(spectra)
+```
+
+and as `t()` returns an object of class `matrix`, we can transform it back to a `data.frame`:
+
+```{r}
+spectra <- as.data.frame(spectra.t)
+rm(spectra.t)
+```
+
+The `rm(spectra.t)` command let us get rid of the `spectra.t` object, so we can save computer memory.
+
+At this moment we only have one object saved in the memory of this session:
+
+```{r}
+ls()
+```
+```{r}
+dim(spectra)
+class(spectra)
+```
+Here, spectra has 96 (samples) rows and 1869 columns (variables). 
+
+```{r}
+str(spectra[,1869])
+```
+The last column is a column of zeros so we proceed to remove it.
+
+```{r}
+spectra <- spectra[,-1869]
+```
+
+
+Then we select only samples from 125 to 213:
+
+```{r}
+spectra <- spectra[-c(73:95),]
+```
+
+We can add a factor variable in order to relate these samples and the group they are from:
+
+```{r}
+class <- read.csv('sujetos.csv',header = F, sep =  ',')
+wn <- as.numeric(colnames(spectra))
+spectra$class <- class[,2]
+```
+
+# graphical review of spectra.
+```{r}
+spectra$class <- as.factor(spectra$class)
+
+table(spectra$class)
+```
+
+
+```{r}
+
+for(i in 1:nrow(spectra)){
+  
+  
+
+plot(wn, 
+     spectra[i,1:ncol(spectra)-1], 
+     type="l", 
+     xlim=c(1900,400),
+     ylim = c(-0.04,0.15),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+```
+
+
+
+```{r}
+library(mdatools)
+spectra.snv <- prep.snv(spectra[,1:ncol(spectra)-1])
+
+for(i in 1:nrow(spectra.snv)){
+  
+  
+
+plot(wn, 
+     spectra.snv[i,1:ncol(spectra.snv)], 
+     type="l", 
+     xlim=c(4000,400),
+     # ylim = c(-0.04,0.15),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+
+```
+
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+spectra.t <- t(spectra)
+
+spectra.t$x <- as.numeric(rownames(spectra.t))
+g <- ggplot(spectra, aes)
+```
+

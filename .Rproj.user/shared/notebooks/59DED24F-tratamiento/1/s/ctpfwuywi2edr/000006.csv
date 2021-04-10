@@ -1,0 +1,1 @@
+"0","plot(wn, spectra[1,1:ncol(spectra)-1], type=""l"", xlim=c(4000,400), col=""black"", axes=T, xlab="""",ylab="""", lwd=""1.8"")"

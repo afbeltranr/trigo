@@ -1,0 +1,3 @@
+"0","class <- read.csv('sujetos.csv',header = F, sep =  ',')"
+"0","wn <- as.numeric(colnames(spectra))"
+"0","spectra$class <- class[,2]"

@@ -1,0 +1,17 @@
+"0","library(ggplot2)"
+"0","library(reshape2)"
+"2","package ‘reshape2’ was built under R version 4.0.5"
+"0","spectra.t <- t(spectra)"
+"0",""
+"0","spectra.t$x <- as.numeric(rownames(spectra.t))"
+"2","NAs introduced by coercion"
+"2","Coercing LHS to a list"
+"0","g <- ggplot(spectra, aes)"
+"2","Error: Mapping should be created with `aes()` or `aes_()`.
+[90mRun `rlang::last_error()` to see where the error occurred.[39m
+"
+"2","Error during wrapup: "
+"2","negative length vectors are not allowed
+"
+"2","Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+"

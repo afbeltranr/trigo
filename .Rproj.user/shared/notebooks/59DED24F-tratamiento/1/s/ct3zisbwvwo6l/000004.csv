@@ -1,0 +1,4 @@
+"0","library(mdatools)"
+"0",""
+"0","mdaplot(spectra[,1:ncol(spectra)-1], type = 'l', cgroup = 1:nrow(spectra),"
+"0","        xlim = c(4000,200))"
