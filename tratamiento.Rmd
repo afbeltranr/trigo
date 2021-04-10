@@ -101,21 +101,66 @@ spectra$class <- class[,2]
 ```
 
 # graphical review of spectra.
+```{r}
+spectra$class <- as.factor(spectra$class)
+
+table(spectra$class)
+```
+
+
+```{r}
+
+for(i in 1:nrow(spectra)){
+  
+  
+
+plot(wn, 
+     spectra[i,1:ncol(spectra)-1], 
+     type="l", 
+     xlim=c(1900,400),
+     ylim = c(-0.04,0.15),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+```
+
+
 
 ```{r}
 library(mdatools)
+spectra.snv <- prep.snv(spectra[,1:ncol(spectra)-1])
 
-mdaplot(spectra[,1:ncol(spectra)-1], type = 'l', cgroup = 1:nrow(spectra),
-        xlim = c(4000,200))
-```
-
-```{r}
-
-
+for(i in 1:nrow(spectra.snv)){
+  
+  
 
 plot(wn, 
-     spectra[1,1:ncol(spectra)-1], 
+     spectra.snv[i,1:ncol(spectra.snv)], 
      type="l", 
-     xlim=c(4000,400), col="black", axes=T, xlab="",ylab="", lwd="1.8")
+     xlim=c(4000,400),
+     # ylim = c(-0.04,0.15),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+
+```
+
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+spectra.t <- t(spectra)
+
+spectra.t$x <- as.numeric(rownames(spectra.t))
+g <- ggplot(spectra, aes)
 ```
 
