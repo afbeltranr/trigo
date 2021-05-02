@@ -1,0 +1,9 @@
+---
+title: "Descripcion tratamiento final"
+author: "Andres Felipe Beltran"
+date: "4/29/2021"
+output:   
+
+  prettydoc::html_pretty:
+    theme: cayman
+---
