@@ -108,5 +108,8 @@ wn2 <- matrix(, nrow=1868, ncol=1)
 
 En el script original, utilizamos un ciclo para llenar posición por posición,  en las lineas `15` a `24`. Esto no es necesario y puede hacerse mediante una orden:
 
+```{r}
+wn2[,1] <- wn
+```
 
 

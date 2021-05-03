@@ -1,0 +1,317 @@
+---
+title: "Tratamiento espectros Silica - Lignina"
+author: "Andres Felipe Beltran"
+date: "4/9/2021"
+output:   
+
+  prettydoc::html_pretty:
+    theme: cayman
+---
+As a first step we import the mean spectra from file `matrizbien.txt`:
+
+```{r}
+spectra <- read.table('matrizbien.txt', sep = ' ', header = TRUE)
+```
+
+In this matrix, the first three columns are not subjects or variables, so we can remove them:
+
+Firstly we remove columns 1 and 3, that have information about row index number:
+
+```{r}
+str(spectra[,c(1,3)])
+```
+In the last command we asked `R` about the nature of columns 1 and 3, in order to confirm why are we removing them. column 1 is a vector of class `integer`, and column 3 is a vector of class `character`.
+
+
+Then we can proceed to remove them:
+
+```{r}
+spectra <- spectra[,-c(1,3)]
+
+```
+
+In this new `data.frame` the first column `lambda` has information about the variables, the frequency of light at which samples were exposed.
+
+In order to remove this column without losing any information we can use the function `column_to_rownames()` from `tibble` package:
+
+Firstly, we confirm that the object `spectra` has a 
+class of `data.frame`
+
+```{r}
+class(spectra)
+```
+Then we make the replacement:
+
+```{r}
+library(tibble)
+spectra <- column_to_rownames(spectra , var = 'lambda')
+```
+
+
+In this moment we have a matrix that has only  the attributes we need: properly named row names and column names, and the absorbances of the samples at each frequency of infrared light.
+
+In order to process the information within this matrix, using `R` functions written for chemometric analyses, it is important to place the subjects (samples) in rows and the variables (wave numbers) in columns. In order to achieve this configuration we proceed to calculate the transpose of the original matrix `spectra` by means of the `t()` function.
+
+```{r}
+spectra.t <- t(spectra)
+```
+
+and as `t()` returns an object of class `matrix`, we can transform it back to a `data.frame`:
+
+```{r}
+spectra <- as.data.frame(spectra.t)
+rm(spectra.t)
+```
+
+The `rm(spectra.t)` command let us get rid of the `spectra.t` object, so we can save computer memory.
+
+At this moment we only have one object saved in the memory of this session:
+
+```{r}
+ls()
+```
+```{r}
+dim(spectra)
+class(spectra)
+```
+Here, spectra has 96 (samples) rows and 1869 columns (variables). 
+
+```{r}
+str(spectra[,1869])
+```
+The last column is a column of zeros so we proceed to remove it.
+
+```{r}
+spectra <- spectra[,-1869]
+```
+
+
+Then we select only samples from 125 to 213:
+
+```{r}
+spectra <- spectra[-c(73:95),]
+```
+
+We can add a factor variable in order to relate these samples and the group they are from:
+
+```{r}
+class <- read.csv('sujetos.csv',header = F, sep =  ',')
+wn <- as.numeric(colnames(spectra))
+spectra$class <- class[,2]
+```
+
+# graphical review of spectra.
+```{r}
+spectra$class <- as.factor(spectra$class)
+
+table(spectra$class)
+```
+
+
+```{r}
+
+for(i in 1:nrow(spectra)){
+  
+  
+
+plot(wn, 
+     spectra[i,1:ncol(spectra)-1], 
+     type="l", 
+     xlim=c(1900,400
+            ),
+     ylim = c(-0.04,0.15),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+```
+
+
+
+```{r}
+library(mdatools)
+spectra.snv <- prep.snv(spectra[,1:ncol(spectra)-1])
+par(mfrow = c(1,2))
+
+
+for(i in 1:nrow(spectra.snv)){
+  
+  
+
+plot(wn, 
+     spectra.snv[i,1:ncol(spectra.snv)], 
+     type="l", 
+     xlim=c(4000,400),
+      ylim = c(-1.5,4.6),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+abline(v= c(1706,1717,1610,1514,1462,1328,1276,1220,1129,1083,854,834,817), lty = 2, col =1) # bands reference 1
+par(new = F)
+for(i in 1:nrow(spectra)){
+  
+  
+
+plot(wn, 
+     spectra[i,1:(ncol(spectra))-1], 
+     type="l", 
+     xlim=c(4000,400),
+      ylim = c(-0.1,0.1),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+
+```
+
+```{r}
+rango2 <- spectra[,c(1:779)]
+snv.rango2 <- prep.snv(rango2)
+
+par(mfrow = c(1,2))
+for(i in 1:nrow(snv.rango2)){
+  
+  
+
+plot(wn[1:779], 
+     snv.rango2[i,1:ncol(snv.rango2)], 
+     type="l", 
+     xlim=c(1900,400),
+      ylim = c(-1.5,4.6),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+abline(v= c(1706,1717,1610,1514,1462,1328,1276,1220,1129,1083,854,834,817), lty = 2, col =1) # bands reference 1
+par(new = F)
+for(i in 1:nrow(rango2)){
+  
+  
+
+plot(wn[1:779], 
+     spectra[i,1:ncol(rango2)], 
+     type="l", 
+       xlim=c(1900,400),
+      ylim = c(-0.01,0.1),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+
+```
+
+
+
+```{r}
+library(hyperSpec)
+
+wnA <- wn[1:779]
+spc <- new('hyperSpec', spc = rango2, wavelength = wnA)
+bend <- 0.1 * wl.eval(spc, function (x) x^6+x^5+x^4+x^3+x^2 ,normalize.wl=normalize01)
+
+bl <- spc.rubberband (spc+bend, noise = 1e-4, df=20)-bend
+suma <- spc+bend
+spc3 <- spc - bl
+
+
+plot(spc,wl.reverse = TRUE)
+plot(bl, add=TRUE, col=2,wl.reverse = TRUE)
+readline("linea base con rubberband y bend")
+
+plot(suma,wl.reverse = TRUE)
+plot(bend, add=TRUE, col=2,wl.reverse = TRUE)
+readline("rubberband")
+
+plot(spc3,wl.reverse = TRUE)
+```
+
+```{r}
+library(mdatools)
+corregido <- as.data.frame(spc3[1:73])
+corregido2 <- as.data.frame(corregido[,1])
+
+for(i in 1:nrow(corregido2)){
+  
+  
+
+plot(wn[1:779], 
+     corregido2[i,1:ncol(corregido2)], 
+     type="l", 
+       xlim=c(1900,400),
+      ylim = c(-0.01,0.1),
+     col=spectra$class[i], 
+     axes=T,
+     xlab="",
+     ylab="", 
+     lwd="1.8")
+  par(new=T)
+}
+```
+```{r}
+
+```
+```{r}
+# par(mfrow = c(1,2))
+# plotScores(PCA.cor, show.labels = TRUE)
+# plotLoadings(PCA.cor, show.labels = TRUE)
+```
+
+
+```{r}
+selection <- corregido2[-c(67,27,35,36,4,5,19,34,73,20,18,12,11,10,9,8,7,6,59,55,1,2,3,30,42,41,71,29),]
+
+class.selection <- spectra$class[-c(67,27,35,36,4,5,19,34,73,20,18,12,11,10,9,8,7,6,59,55,1,2,3,30,42,41,71,29)]
+for(i in 1:nrow(selection)){
+
+
+
+plot(wn[1:779],
+     corregido2[i,1:ncol(selection)],
+     type="l",
+       xlim=c(1900,400),
+      ylim = c(-0.01,0.1),
+     col=class.selection[i],
+     axes=T,
+     xlab="",
+     ylab="",
+     lwd="1.8")
+  par(new=T)
+}
+
+```
+
+```{r}
+pcajuntos <- prcomp(selection , center=TRUE, scale = T)
+
+valp <- (pcajuntos$sdev)^2
+varian <- (valp*100)/sum(valp)
+varian2 <- varian[c(1:10)]
+
+coord <- pcajuntos$x
+plot(coord[,1],
+     coord[,2],
+     col=class.selection,
+     )
+text(coord[,1],coord[,2], class.selection, cex=0.8)
+```
+
+
+bibliography
+
+* Boeriu, C. G., Bravo, D., Gosselink, R. J., & van Dam, J. E. (2004). Characterisation of structure-dependent functional properties of lignin with infrared spectroscopy. Industrial crops and products, 20(2), 205-218.

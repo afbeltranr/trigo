@@ -1,0 +1,28 @@
+{
+    "id": "453241C0",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1618534233495.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "id": "d5ed659c156b491abe2fb752cd33f1b3",
+        "name": "spc",
+        "title": "spc",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 140689944739856,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1618534233495,
+    "read_only": false,
+    "read_only_alternatives": []
+}
